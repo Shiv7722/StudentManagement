@@ -1,4 +1,6 @@
+import java.io.Console;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class LoginMenu{
     private static Scanner sc;
@@ -22,15 +24,17 @@ public class LoginMenu{
         System.out.println("------------");
         System.out.println("1. Login as Course Provider");
         System.out.println("2. SignUp as Course Provider");
+        System.out.println("------------");
         System.out.println("3. Login as Student");
         System.out.println("4. Exit");
 
         System.out.print("Enter the corresponding number to select the option : ");
         
-        switch (getChoice()) {
+        switch(getChoice()) {
             case 1:
                 break;
             case 2:
+            signUpAsCProvider();
                 break;
             case 3:
                  
@@ -42,6 +46,66 @@ public class LoginMenu{
             getHomeMenu();
                 break;
         }
+    }
+
+    //Method to Get Signup details
+    public void signUpAsCProvider(){
+        String cProviderName;
+        String password;
+        String contact;
+
+        System.out.println("To SignUp as Course Provider : \nPlease enter your name : ");
+        cProviderName = sc.nextLine();
+
+        System.out.println("Please enter your Contact : ");
+        //Looping until get the valid contact input
+        while(true){
+        contact = sc.nextLine();
+        if(isValidCon(contact)){
+            break;
+        }else{
+            System.out.println("Please enter valid contact\nRe-enter your contact : ");
+        }
+        }
+        
+        //Console object to call the readPassword method of Console class
+        Console console = System.console();
+
+        //looping until get the valid password
+        while (true) {
+            String passCheck;
+            char[] passCheckArray = console.readPassword("Create your password: ");
+            passCheck = new String(passCheckArray);
+            char[] passArray = console.readPassword("Re-enter the password: ");
+            password = new String(passArray);
+            if(passCheck.equals(password)){
+                if(isValidPassword(password)) {
+                    
+                        
+                        break;
+                   
+                
+                } else {
+                System.out.println("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one digit.");
+                }
+        }else{
+            System.out.println("Password doesn't match");
+        }
+        }
+
+        System.out.println("SignedUp Successfully");
+        
+    }
+
+    private static boolean isValidCon(String contact) {
+        String conPattern = "^[6-9][0-9]{9}$";
+        return Pattern.matches(conPattern, contact);
+    }
+
+    //Method to validate the password
+    private static boolean isValidPassword(String password) {
+        String passPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
+        return Pattern.matches(passPattern, password);
     }
     public static void main(String[] args) {
         LoginMenu lm = new LoginMenu();
