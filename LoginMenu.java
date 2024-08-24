@@ -43,4 +43,8 @@ public class LoginMenu{
                 break;
         }
     }
+    public static void main(String[] args) {
+        LoginMenu lm = new LoginMenu();
+        lm.getHomeMenu();
+    }
 }
