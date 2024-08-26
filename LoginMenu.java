@@ -6,6 +6,7 @@ import java.sql.SQLException;
 public class LoginMenu {
     private static Scanner sc;
     private DBManager dbManager;
+
     // LoginMenu Constructor
     public LoginMenu() {
         this.sc = new Scanner(System.in);
@@ -34,6 +35,7 @@ public class LoginMenu {
 
         switch (getChoice()) {
             case 1:
+            loginAsCProvider();
                 break;
             case 2:
                 signUpAsCProvider();
@@ -54,7 +56,7 @@ public class LoginMenu {
     public void signUpAsCProvider() {
         String cProviderName;
         String password;
-        String contact;
+        Long contact;
 
         System.out.println("To SignUp as Course Provider : \nPlease enter your name : ");
         cProviderName = sc.nextLine();
@@ -62,7 +64,7 @@ public class LoginMenu {
         System.out.println("Please enter your Contact : ");
         // Looping until get the valid contact input
         while (true) {
-            contact = sc.nextLine();
+            contact = sc.nextLong();
             if (isValidCon(contact)) {
                 break;
             } else {
@@ -87,29 +89,72 @@ public class LoginMenu {
                 if (isValidPassword(password)) {
                     try {
                         dbManager.addCourseProvider(cProviderName, contact, password);
+
                     } catch (SQLException e) {
                         System.out.println("Error while Creating account to database: " + e.getMessage());
-                        
                     }
-                    
+
                     break;
 
                 } else {
-                    System.out.println(
-                            "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one digit.");
+                    System.out.println("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one digit.");
                 }
             } else {
                 System.out.println("Password doesn't match");
             }
         }
 
-        System.out.println("SignedUp Successfully");
+    }
+
+    // Method to get Course Provider login
+    public void loginAsCProvider() {
+        String password;
+        long contact;
+        int userCheck;
+        System.out.println("Please enter your Contact : ");
+        // Looping until get the valid contact input
+        while (true) {
+            contact = sc.nextLong();
+            if (isValidCon(contact)) {
+                break;
+            } else {
+                System.out.println("Please enter valid contact\nRe-enter your contact : ");
+            }
+        }
+
+        Console console = System.console();
+        // Looping until get valid password
+        while (true) {
+            char[] passArray = console.readPassword("Enter your password : ");
+            password = new String(passArray);
+
+            try {
+                userCheck = dbManager.checkCourseProvider(contact, password);
+                if (userCheck == 1) {
+                    break;
+                } else if (userCheck == 2) {
+                    System.out.println("Incorrect Password !!\nPlease try again");
+                }else if(userCheck==3){
+                    break;
+                }
+
+            } catch (SQLException e) {
+                System.out.println("Error while fetching the data" + e.getMessage());
+            }
+        }
+        // Checking if the contact doesn't match with the database 
+        if (userCheck == 3) {
+            System.out.println("Incorrect Contact number ");
+            loginAsCProvider();
+        }
+        System.out.println("Login successfull");
 
     }
 
-    private static boolean isValidCon(String contact) {
+    private static boolean isValidCon(Long contact) {
+        String stringCon = String.valueOf(contact);
         String conPattern = "^[6-9][0-9]{9}$";
-        return Pattern.matches(conPattern, contact);
+        return Pattern.matches(conPattern, stringCon);
     }
 
     // Method to validate the password
