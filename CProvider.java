@@ -10,4 +10,8 @@ public class CProvider {
         this.cProviderCon = cProviderCon;
     }
 
+    public int getCPID(){
+        return cProviderID;
+    }
+
 }

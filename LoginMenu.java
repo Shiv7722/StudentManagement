@@ -4,24 +4,20 @@ import java.util.regex.Pattern;
 import java.sql.SQLException;
 
 public class LoginMenu {
-    private static Scanner sc;
+    public static Scanner sc = new Scanner(System.in);
     private DBManager dbManager;
+    private CProvider cProvider;
+    private UserCProvider userCP;
 
     // LoginMenu Constructor
     public LoginMenu() {
-        this.sc = new Scanner(System.in);
         this.dbManager = new DBManager();
     }
 
     // Method to get user input
-    public static int getChoice() {
-        int choice = sc.nextInt();
-        sc.nextLine();
-        return choice;
-    }
+    
 
     // Method to to get the User Choice to get Login/Signup as Student or Course
-    // Provider
     public void getHomeMenu() {
         System.out.println("Login/SignUp Menu");
         System.out.println("------------");
@@ -33,7 +29,11 @@ public class LoginMenu {
 
         System.out.print("Enter the corresponding number to select the option : ");
 
-        switch (getChoice()) {
+        int choice = sc.nextInt();
+        sc.nextLine();
+
+
+        switch (choice) {
             case 1:
             loginAsCProvider();
                 break;
@@ -58,13 +58,15 @@ public class LoginMenu {
         String password;
         Long contact;
 
-        System.out.println("To SignUp as Course Provider : \nPlease enter your name : ");
+        System.out.println("To SignUp as Course Provider :");
+        System.out.println("Please enter your name : ");
         cProviderName = sc.nextLine();
 
         System.out.println("Please enter your Contact : ");
         // Looping until get the valid contact input
         while (true) {
             contact = sc.nextLong();
+            sc.nextLine();
             if (isValidCon(contact)) {
                 break;
             } else {
@@ -103,6 +105,19 @@ public class LoginMenu {
                 System.out.println("Password doesn't match");
             }
         }
+        
+        System.out.println("Sign Up successful");
+        try {
+           cProvider = dbManager.getCProvider(contact, password);
+           userCP = new UserCProvider(cProvider);
+           userCP.getCProviderMenu();
+
+        } catch (SQLException e) {
+           System.out.println("Error while fetching data "+e.getMessage());
+
+        }
+
+
 
     }
 
@@ -115,6 +130,7 @@ public class LoginMenu {
         // Looping until get the valid contact input
         while (true) {
             contact = sc.nextLong();
+            sc.nextLine();
             if (isValidCon(contact)) {
                 break;
             } else {
@@ -148,10 +164,20 @@ public class LoginMenu {
             loginAsCProvider();
         }
         System.out.println("Login successfull");
+        try {
+            cProvider = dbManager.getCProvider(contact, password);
+            userCP = new UserCProvider(cProvider);
+            userCP.getCProviderMenu();
+ 
+         } catch (SQLException e) {
+            System.out.println("Error while fetching data "+e.getMessage());
+ 
+         }
 
     }
 
-    private static boolean isValidCon(Long contact) {
+    // Method to validate the Contact
+    public static boolean isValidCon(Long contact) {
         String stringCon = String.valueOf(contact);
         String conPattern = "^[6-9][0-9]{9}$";
         return Pattern.matches(conPattern, stringCon);
@@ -162,6 +188,14 @@ public class LoginMenu {
         String passPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$";
         return Pattern.matches(passPattern, password);
     }
+
+    // Method to validate the Roll Number
+    public static boolean isValidRoll(int stRoll) {
+        String roll = String.valueOf(stRoll);
+        String passPattern = "^[0-9]{4}$";
+        return Pattern.matches(passPattern, roll);
+    }
+
 
     public static void main(String[] args) {
         LoginMenu lm = new LoginMenu();

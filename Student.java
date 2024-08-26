@@ -5,10 +5,24 @@ public class Student {
     private long stContact;
 
     // Student class constractor
-    public Student(int stID, String stName, int stRoll, long stContact) {
-        this.stID = stID;
+    public Student(String stName, int stRoll, long stContact) {
         this.stName = stName;
         this.stRoll = stRoll;
         this.stContact = stContact;
+    }
+    public int getStudentID() {
+        return stID;
+    }
+
+    public String getStudentName() {
+        return stName;
+    }
+
+    public int getStudentRoll() {
+        return stRoll;
+    }
+
+    public long getStudentCon() {
+        return stContact;
     }
 }

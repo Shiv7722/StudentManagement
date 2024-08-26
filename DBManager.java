@@ -13,6 +13,7 @@ public class DBManager {
     private static final String DB_PASSWORD = "root";
 
     private Connection con;
+    private CProvider cProvider;
 
     // DBManager Constructor
     public DBManager() {
@@ -23,6 +24,24 @@ public class DBManager {
             System.out.println("Error while connecting to database: " + e.getMessage());
         } catch (ClassNotFoundException e2) {
             System.out.print("TError while connecting to database: " + e2.getMessage());
+        }
+    }
+
+    //Method to add student to the database
+    public int addStudent(Student student,int cProviderID) throws SQLException{
+        PreparedStatement pStatement = null;
+        try {
+            pStatement = con.prepareStatement("INSERT INTO student(studentName,stRoll,stCon,cProviderID) VALUES (?, ?, ?, ?)");
+            pStatement.setString(1, student.getStudentName());
+            pStatement.setInt(2, student.getStudentRoll());
+            pStatement.setLong(3, student.getStudentCon());
+            pStatement.setInt(4, cProviderID);
+            int result = pStatement.executeUpdate();
+            return result;
+        } finally {
+            if (pStatement != null) {
+                pStatement.close();
+            }
         }
     }
 
@@ -71,6 +90,34 @@ public class DBManager {
         }
     }
 
+    //Method to fetch CProvider Info
+    public CProvider getCProvider(long contact, String pass) throws SQLException{
+        PreparedStatement pStatement = null;
+        ResultSet rSet = null;
+        try {
+            pStatement = con.prepareStatement("select * from cprovider where cProviderCon = ?");
+            pStatement.setLong(1, contact);
+            rSet = pStatement.executeQuery();
+            if (rSet.next()) {
+                String encPass = rSet.getString("cProviderPass");
+                if (passMatch(pass, encPass)) {
+                    return new CProvider(rSet.getInt("cProviderID"), rSet.getString("cProviderName"), rSet.getLong("cProviderCon"));
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } finally {
+            if (pStatement != null) {
+                pStatement.close();
+            }
+            if (rSet != null) {
+                rSet.close();
+            }
+        }
+
+    }
     // Method to get convert password to encrypted password
     public static String passEncrypter(String pass) {
         return BCrypt.hashpw(pass, BCrypt.gensalt());
