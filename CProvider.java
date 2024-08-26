@@ -1,13 +1,13 @@
 public class CProvider {
+    int cProviderID;
     private String cProviderName;
     private Long cProviderCon;
-    private String cProviderPass;
 
     // Constractor of CProvider class
-    public CProvider(String cProviderName, Long cProviderCon, String cProviderPass) {
+    public CProvider(int cProviderID, String cProviderName, Long cProviderCon) {
+        this.cProviderID=cProviderID;
         this.cProviderName = cProviderName;
         this.cProviderCon = cProviderCon;
-        this.cProviderPass = cProviderPass;
     }
 
 }
